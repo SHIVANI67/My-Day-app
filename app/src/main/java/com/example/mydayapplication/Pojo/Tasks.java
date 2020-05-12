@@ -2,7 +2,9 @@ package com.example.mydayapplication.Pojo;
 
 import com.google.gson.annotations.SerializedName;
 
-public class Tasks {
+import java.io.Serializable;
+
+public class Tasks implements Serializable {
     @SerializedName("duration")
     private int duration;
 

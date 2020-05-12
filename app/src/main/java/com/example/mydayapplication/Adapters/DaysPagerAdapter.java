@@ -1,8 +1,5 @@
 package com.example.mydayapplication.Adapters;
 
-import android.content.SharedPreferences;
-import android.util.Log;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -16,12 +13,19 @@ import java.util.ArrayList;
 
 public class DaysPagerAdapter extends FragmentPagerAdapter {
     int index;
+    private ArrayList<Tasks> morningList;
+    private ArrayList<Tasks> afternoonList;
+    private ArrayList<Tasks> eveningList;
+    private ArrayList<Tasks> nightList;
 
-    public DaysPagerAdapter(@NonNull FragmentManager fm, int behavior, int index) {
+    public DaysPagerAdapter(@NonNull FragmentManager fm, int behavior, int index, ArrayList<Tasks> morningList, ArrayList<Tasks> afternoonList, ArrayList<Tasks> eveningList, ArrayList<Tasks> nightList) {
         super(fm, behavior);
         this.index = index;
+        this.morningList = morningList;
+        this.afternoonList = afternoonList;
+        this.eveningList = eveningList;
+        this.nightList = nightList;
     }
-
 
     @NonNull
     @Override
@@ -29,16 +33,16 @@ public class DaysPagerAdapter extends FragmentPagerAdapter {
         UserTaskFragment fragment;
         switch (position) {
             case 0:
-                fragment = UserTaskFragment.newInstance(index, 0);
+                fragment = UserTaskFragment.newInstance(index, morningList);
                 return fragment;
             case 1:
-                fragment = UserTaskFragment.newInstance(index, 1);
+                fragment = UserTaskFragment.newInstance(index, afternoonList);
                 return fragment;
             case 2:
-                fragment = UserTaskFragment.newInstance(index, 2);
+                fragment = UserTaskFragment.newInstance(index, eveningList);
                 return fragment;
             case 3:
-                fragment = UserTaskFragment.newInstance(index, 3);
+                fragment = UserTaskFragment.newInstance(index, nightList);
                 return fragment;
             default:
                 return null;

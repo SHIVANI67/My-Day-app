@@ -2,7 +2,9 @@ package com.example.mydayapplication.Pojo;
 
 import com.google.gson.annotations.SerializedName;
 
-public class DrugPojo {
+import java.io.Serializable;
+
+public class DrugPojo implements Serializable {
     @SerializedName("dosage")
     private Dosage dosage;
 

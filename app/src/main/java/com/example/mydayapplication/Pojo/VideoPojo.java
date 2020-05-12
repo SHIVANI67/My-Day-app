@@ -2,7 +2,9 @@ package com.example.mydayapplication.Pojo;
 
 import com.google.gson.annotations.SerializedName;
 
-public class VideoPojo {
+import java.io.Serializable;
+
+public class VideoPojo implements Serializable {
     @SerializedName("thumbnail")
     private String thumbnail;
 

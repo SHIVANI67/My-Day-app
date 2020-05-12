@@ -19,7 +19,6 @@ import com.example.mydayapplication.R;
 import com.google.android.material.tabs.TabLayout;
 import com.google.gson.Gson;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -42,6 +41,11 @@ public class MainActivity extends AppCompatActivity {
     Calendar calendar = Calendar.getInstance();
     String dayOfTheMonth, month;
     TaskList taskList;
+
+    private ArrayList<Tasks> morningList = new ArrayList<>();
+    private ArrayList<Tasks> afternoonList = new ArrayList<>();
+    private ArrayList<Tasks> eveningList = new ArrayList<>();
+    private ArrayList<Tasks> nightList = new ArrayList<>();
 
     public static final String BASE_URL = "https://38rhabtq01.execute-api.ap-south-1.amazonaws.com/dev/schedule/";
     private static Retrofit retrofit = null;
@@ -71,29 +75,54 @@ public class MainActivity extends AppCompatActivity {
         monthTv.setText(month);
 
         String returnJson = mPrefs.getString("Tasklists", "");
+        final TaskList taskList = gson.fromJson(returnJson, TaskList.class);
+
 
         System.out.println("shared preference data :" + returnJson.isEmpty());
 
-        if(returnJson.isEmpty()){
+        if (returnJson.isEmpty()) {
             connectAndGetApiData();
+        } else {
+
+            for (Tasks task : taskList.getTasks()) {
+                int frequency = task.getFrequency();
+                int duration = task.getDuration();
+                int iteration = duration / frequency;
+
+                if ((index % frequency == 0) && index < iteration) {
+                    for (int i = 0; i < task.getScheduleList().length; i++) {
+                        String timeOfDay = task.getScheduleList()[i].getSession();
+
+                        if (timeOfDay.equals("MORNING")) {
+                            morningList.add(task);
+                        } else if (timeOfDay.equals("AFTERNOON")) {
+                            afternoonList.add(task);
+                        } else if (timeOfDay.equals("EVENING")) {
+                            eveningList.add(task);
+                        } else {
+                            nightList.add(task);
+                        }
+                    }
+                }
+            }
         }
 
         long firstApiCallDate = mPrefs.getLong("Api first call date", 0);
-        index = (int)(System.currentTimeMillis() - firstApiCallDate)/(1000*60*60*24);
+        index = (int) (System.currentTimeMillis() - firstApiCallDate) / (1000 * 60 * 60 * 24);
 
-        Log.e("indexvalue", "onCreate: "+ index);
+        Log.e("indexvalue", "onCreate: " + index);
 
         pager = findViewById(R.id.view_pager);
         tabs = findViewById(R.id.day_tabs);
         tabs.setupWithViewPager(pager);
 
-        adapter = new DaysPagerAdapter(getSupportFragmentManager(), FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT,index);
+        adapter = new DaysPagerAdapter(getSupportFragmentManager(), FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT, index, morningList, afternoonList, eveningList, nightList);
         pager.setAdapter(adapter);
 
         leftArrow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                calendar.add(Calendar.DAY_OF_MONTH,-1);
+                calendar.add(Calendar.DAY_OF_MONTH, -1);
                 Date d = calendar.getTime();
                 dayOfTheMonth = new SimpleDateFormat("dd").format(d);
                 month = new SimpleDateFormat("MMM").format(d);
@@ -102,7 +131,34 @@ public class MainActivity extends AppCompatActivity {
 
                 index--;
 
-                adapter = new DaysPagerAdapter(getSupportFragmentManager(), FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT, index);
+                morningList.clear();
+                afternoonList.clear();
+                eveningList.clear();
+                nightList.clear();
+
+                for (Tasks task : taskList.getTasks()) {
+                    int frequency = task.getFrequency();
+                    int duration = task.getDuration();
+                    int iteration = duration / frequency;
+
+                    if ((index % frequency == 0) && index < iteration) {
+                        for (int i = 0; i < task.getScheduleList().length; i++) {
+                            String timeOfDay = task.getScheduleList()[i].getSession();
+
+                            if (timeOfDay.equals("MORNING")) {
+                                morningList.add(task);
+                            } else if (timeOfDay.equals("AFTERNOON")) {
+                                afternoonList.add(task);
+                            } else if (timeOfDay.equals("EVENING")) {
+                                eveningList.add(task);
+                            } else {
+                                nightList.add(task);
+                            }
+                        }
+                    }
+                }
+
+                adapter = new DaysPagerAdapter(getSupportFragmentManager(), FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT, index, morningList, afternoonList, eveningList, nightList);
                 pager.setAdapter(adapter);
             }
         });
@@ -110,7 +166,7 @@ public class MainActivity extends AppCompatActivity {
         rightArrow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                calendar.add(Calendar.DAY_OF_MONTH,1);
+                calendar.add(Calendar.DAY_OF_MONTH, 1);
                 Date d = calendar.getTime();
                 dayOfTheMonth = new SimpleDateFormat("dd").format(d);
                 month = new SimpleDateFormat("MMM").format(d);
@@ -119,7 +175,35 @@ public class MainActivity extends AppCompatActivity {
 
                 index++;
 
-                adapter = new DaysPagerAdapter(getSupportFragmentManager(), FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT,index);
+                morningList.clear();
+                afternoonList.clear();
+                eveningList.clear();
+                nightList.clear();
+
+                for (Tasks task : taskList.getTasks()) {
+                    int frequency = task.getFrequency();
+                    int duration = task.getDuration();
+                    int iteration = duration / frequency;
+                    task.setComplete(false);
+
+                    if ((index % frequency == 0) && index < iteration) {
+                        for (int i = 0; i < task.getScheduleList().length; i++) {
+                            String timeOfDay = task.getScheduleList()[i].getSession();
+
+                            if (timeOfDay.equals("MORNING")) {
+                                morningList.add(task);
+                            } else if (timeOfDay.equals("AFTERNOON")) {
+                                afternoonList.add(task);
+                            } else if (timeOfDay.equals("EVENING")) {
+                                eveningList.add(task);
+                            } else {
+                                nightList.add(task);
+                            }
+                        }
+                    }
+                }
+
+                adapter = new DaysPagerAdapter(getSupportFragmentManager(), FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT, index, morningList, afternoonList, eveningList, nightList);
                 pager.setAdapter(adapter);
             }
         });
@@ -139,13 +223,35 @@ public class MainActivity extends AppCompatActivity {
         call.enqueue(new Callback<TaskList>() {
             @Override
             public void onResponse(Call<TaskList> call, Response<TaskList> response) {
-                if(response.isSuccessful()) {
+                if (response.isSuccessful()) {
                     taskList = response.body();
 
                     json = gson.toJson(taskList);
-                    prefsEditor.putString("Tasklists",json);
+                    prefsEditor.putString("Tasklists", json);
                     prefsEditor.putLong("Api first call date", System.currentTimeMillis());
                     prefsEditor.commit();
+
+                    for (Tasks task : taskList.getTasks()) {
+                        int frequency = task.getFrequency();
+                        int duration = task.getDuration();
+                        int iteration = duration / frequency;
+
+                        if ((index % frequency == 0) && index < iteration) {
+                            for (int i = 0; i < task.getScheduleList().length; i++) {
+                                String timeOfDay = task.getScheduleList()[i].getSession();
+
+                                if (timeOfDay.equals("MORNING")) {
+                                    morningList.add(task);
+                                } else if (timeOfDay.equals("AFTERNOON")) {
+                                    afternoonList.add(task);
+                                } else if (timeOfDay.equals("EVENING")) {
+                                    eveningList.add(task);
+                                } else {
+                                    nightList.add(task);
+                                }
+                            }
+                        }
+                    }
                 }
             }
 

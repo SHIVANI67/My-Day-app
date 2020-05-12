@@ -12,10 +12,16 @@
         android:id="@+id/tasks_rv"
         android:visibility="gone"/>
 
+    <ProgressBar
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/progress_circular"
+        android:visibility="gone"/>
+
     <TextView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="No tasks in the list"
+        android:text="No medication for this time"
         android:id="@+id/no_task_found_tv"
         android:textSize="32sp"
         android:gravity="center"

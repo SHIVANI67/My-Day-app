@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.mydayapplication.Activity.VideoPlayerActivity;
@@ -28,28 +29,25 @@ import static android.content.Context.MODE_PRIVATE;
 public class UserTaskFragment extends Fragment implements TaskListAdapter.OnTaskClickedListener {
 
     private static final String ARG_PARAM1 = "index";
-    private static final String ARG_PARAM2 = "position";
+    private static final String ARG_PARAM2 = "tasks";
     private RecyclerView rvTasks;
     private TaskListAdapter adapter;
     private TextView noTaskFound;
     SharedPreferences preferences;
-    private TaskList list;
-    private ArrayList<Tasks> morningList = new ArrayList<>();
-    private ArrayList<Tasks> afternoonList = new ArrayList<>();
-    private ArrayList<Tasks> eveningList = new ArrayList<>();
-    private ArrayList<Tasks> nightList = new ArrayList<>();
+    private ProgressBar progressBar;
+
+    private ArrayList<Tasks> tasksArrayList;
 
     private int index;
-    private int position;
 
     public UserTaskFragment() {
     }
 
-    public static UserTaskFragment newInstance(int index, int position) {
+    public static UserTaskFragment newInstance(int index, ArrayList<Tasks> tasksArrayList) {
         UserTaskFragment fragment = new UserTaskFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_PARAM1, index);
-        args.putInt(ARG_PARAM2, position);
+        args.putSerializable(ARG_PARAM2, tasksArrayList);
         fragment.setArguments(args);
         return fragment;
     }
@@ -60,33 +58,10 @@ public class UserTaskFragment extends Fragment implements TaskListAdapter.OnTask
         preferences = this.getActivity().getPreferences(MODE_PRIVATE);
 
         String returnJson = preferences.getString("Tasklists", "");
-        list = new Gson().fromJson(returnJson, TaskList.class);
-
-        for (Tasks task : list.getTasks()) {
-            int frequency = task.getFrequency();
-            int duration = task.getDuration();
-            int iteration = duration / frequency;
-
-            if ((index % frequency == 0) && index < iteration) {
-                for (int i = 0; i < task.getScheduleList().length; i++) {
-                    String timeOfDay = task.getScheduleList()[i].getSession();
-
-                    if (timeOfDay.equals("MORNING")) {
-                        morningList.add(task);
-                    } else if (timeOfDay.equals("AFTERNOON")) {
-                        afternoonList.add(task);
-                    } else if (timeOfDay.equals("EVENING")) {
-                        eveningList.add(task);
-                    } else {
-                        nightList.add(task);
-                    }
-                }
-            }
-        }
 
         if (getArguments() != null) {
             index = getArguments().getInt(ARG_PARAM1);
-            position = getArguments().getInt(ARG_PARAM2);
+            tasksArrayList = (ArrayList<Tasks>) getArguments().getSerializable(ARG_PARAM2);
 
             Log.e("taskarray", "list is not empty");
         }
@@ -99,44 +74,22 @@ public class UserTaskFragment extends Fragment implements TaskListAdapter.OnTask
         View view = inflater.inflate(R.layout.fragment_user_task, container, false);
         rvTasks = view.findViewById(R.id.tasks_rv);
         noTaskFound = view.findViewById(R.id.no_task_found_tv);
+        progressBar = view.findViewById(R.id.progress_circular);
 
-        if (list != null) {
+        if (tasksArrayList != null && tasksArrayList.size() != 0) {
             rvTasks.setVisibility(View.VISIBLE);
+            progressBar.setVisibility(View.VISIBLE);
 
-            if (position == 0) {
-                if (morningList == null) {
-                    noTaskFound.setVisibility(View.VISIBLE);
-                } else {
-                    adapter = new TaskListAdapter(getContext(), morningList, this);
-                }
-            } else if (position == 1) {
-                if (afternoonList.size() == 0) {
-                    rvTasks.setVisibility(View.GONE);
-                    noTaskFound.setVisibility(View.VISIBLE);
-                } else {
-                    adapter = new TaskListAdapter(getContext(), afternoonList, this);
-                }
-            } else if (position == 2) {
-                if (eveningList.size() == 0) {
-                    rvTasks.setVisibility(View.GONE);
-                    noTaskFound.setVisibility(View.VISIBLE);
-                } else {
-                    adapter = new TaskListAdapter(getContext(), eveningList, this);
-                }
-            } else {
-                if (nightList.size() == 0) {
-                    rvTasks.setVisibility(View.GONE);
-                    noTaskFound.setVisibility(View.VISIBLE);
-                } else {
-                    adapter = new TaskListAdapter(getContext(), nightList, this);
-                }
-            }
+            adapter = new TaskListAdapter(getContext(), tasksArrayList, this);
+
             LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
             rvTasks.setLayoutManager(layoutManager);
             rvTasks.setAdapter(adapter);
+            progressBar.setVisibility(View.GONE);
         } else {
             noTaskFound.setVisibility(View.VISIBLE);
         }
+
         return view;
     }
 

@@ -2,7 +2,9 @@ package com.example.mydayapplication.Pojo;
 
 import com.google.gson.annotations.SerializedName;
 
-public class TaskList {
+import java.io.Serializable;
+
+public class TaskList implements Serializable {
     @SerializedName("tasks")
     private Tasks[] tasks;
 

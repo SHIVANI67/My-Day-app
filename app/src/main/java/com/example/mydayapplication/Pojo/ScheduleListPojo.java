@@ -2,7 +2,9 @@ package com.example.mydayapplication.Pojo;
 
 import com.google.gson.annotations.SerializedName;
 
-public class ScheduleListPojo {
+import java.io.Serializable;
+
+public class ScheduleListPojo implements Serializable {
     @SerializedName("session")
     private String session;
     @SerializedName("foodContext")
