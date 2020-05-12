@@ -26,6 +26,7 @@ import java.util.ArrayList;
 
 import static android.content.Context.MODE_PRIVATE;
 
+// Fragment to be displayed in the viewpager
 public class UserTaskFragment extends Fragment implements TaskListAdapter.OnTaskClickedListener {
 
     private static final String ARG_PARAM1 = "index";
@@ -47,7 +48,7 @@ public class UserTaskFragment extends Fragment implements TaskListAdapter.OnTask
         UserTaskFragment fragment = new UserTaskFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_PARAM1, index);
-        args.putSerializable(ARG_PARAM2, tasksArrayList);
+        args.putSerializable(ARG_PARAM2, tasksArrayList);   //pass arraylist and save it in bundle
         fragment.setArguments(args);
         return fragment;
     }
@@ -96,7 +97,7 @@ public class UserTaskFragment extends Fragment implements TaskListAdapter.OnTask
     @Override
     public void onTaskClicked(int position, Tasks tasks) {
 
-        tasks.setComplete(true);
+        tasks.setComplete(true);                                            // set iscomplete to true after onclick
 
         if (tasks.getType().equals("VOD")) {
             Intent intent = new Intent(getContext(), VideoPlayerActivity.class);

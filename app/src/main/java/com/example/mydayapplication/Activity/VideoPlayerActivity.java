@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.mydayapplication.R;
 
+// video activity to play video
 public class VideoPlayerActivity extends AppCompatActivity {
     String videoUrl;
     VideoView videoView;
@@ -30,6 +31,7 @@ public class VideoPlayerActivity extends AppCompatActivity {
 
         getSupportActionBar().hide();
 
+        // create controller to play video
         MediaController controller = new MediaController(this);
         videoView.setMediaController(controller);
         videoView.setVideoURI(Uri.parse(videoUrl));
@@ -40,6 +42,7 @@ public class VideoPlayerActivity extends AppCompatActivity {
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
 
+        // handle screen size and configuration change like if orientation changes from portrait to landscape
         DisplayMetrics metrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(metrics);
         android.widget.LinearLayout.LayoutParams params = (android.widget.LinearLayout.LayoutParams) videoView.getLayoutParams();

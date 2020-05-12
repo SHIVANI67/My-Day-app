@@ -11,6 +11,7 @@ import com.example.mydayapplication.Pojo.Tasks;
 
 import java.util.ArrayList;
 
+// fragment adapter to show the viewpager
 public class DaysPagerAdapter extends FragmentPagerAdapter {
     int index;
     private ArrayList<Tasks> morningList;

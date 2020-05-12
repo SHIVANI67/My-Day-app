@@ -20,6 +20,7 @@ import com.example.mydayapplication.R;
 
 import java.util.ArrayList;
 
+// Recyclerview adapter to populate fragment with data
 public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskViewHolder> {
 
     private Context context;
@@ -114,7 +115,7 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskVi
         }
 
         @Override
-        public void onClick(View v) {
+        public void onClick(View v) {  // handle on touch of recycler view item
             if (taskList.get(getAdapterPosition()).getType().equals("SUPP")) {
                 cvDrugToBeTaken.setVisibility(View.GONE);
                 completedDrug.setVisibility(View.VISIBLE);
@@ -132,6 +133,7 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskVi
         }
     }
 
+    // interface to implement onn touch listener of item
     public interface OnTaskClickedListener {
         void onTaskClicked(int position, Tasks tasks);
     }

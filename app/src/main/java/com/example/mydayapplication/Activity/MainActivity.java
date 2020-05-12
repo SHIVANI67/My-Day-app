@@ -30,6 +30,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+// main class for the UI
 public class MainActivity extends AppCompatActivity {
 
     ImageView leftArrow, rightArrow;
@@ -65,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
         mPrefs = getPreferences(MODE_PRIVATE);
         prefsEditor = mPrefs.edit();
 
+        // Calendar instance to show date
         Date d = calendar.getTime();
         dayOfTheMonth = new SimpleDateFormat("dd").format(d);
         month = new SimpleDateFormat("MMM").format(d);
@@ -80,6 +82,7 @@ public class MainActivity extends AppCompatActivity {
 
         System.out.println("shared preference data :" + returnJson.isEmpty());
 
+        // Do Api call only once after the first install of the app ,for future take value from shared preferences
         if (returnJson.isEmpty()) {
             connectAndGetApiData();
         } else {
@@ -93,6 +96,7 @@ public class MainActivity extends AppCompatActivity {
                     for (int i = 0; i < task.getScheduleList().length; i++) {
                         String timeOfDay = task.getScheduleList()[i].getSession();
 
+                        // Populate four arraylist based on the response to show in the 4 fragments of viewpager
                         if (timeOfDay.equals("MORNING")) {
                             morningList.add(task);
                         } else if (timeOfDay.equals("AFTERNOON")) {
@@ -122,7 +126,7 @@ public class MainActivity extends AppCompatActivity {
         leftArrow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                calendar.add(Calendar.DAY_OF_MONTH, -1);
+                calendar.add(Calendar.DAY_OF_MONTH, -1);                    // Calendar instance to get date on left button click
                 Date d = calendar.getTime();
                 dayOfTheMonth = new SimpleDateFormat("dd").format(d);
                 month = new SimpleDateFormat("MMM").format(d);
@@ -145,6 +149,7 @@ public class MainActivity extends AppCompatActivity {
                         for (int i = 0; i < task.getScheduleList().length; i++) {
                             String timeOfDay = task.getScheduleList()[i].getSession();
 
+                            // Again clear the arraylist and populate based on index
                             if (timeOfDay.equals("MORNING")) {
                                 morningList.add(task);
                             } else if (timeOfDay.equals("AFTERNOON")) {
@@ -158,6 +163,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
 
+                //set viewpager adapter on button click with values
                 adapter = new DaysPagerAdapter(getSupportFragmentManager(), FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT, index, morningList, afternoonList, eveningList, nightList);
                 pager.setAdapter(adapter);
             }
@@ -166,7 +172,7 @@ public class MainActivity extends AppCompatActivity {
         rightArrow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                calendar.add(Calendar.DAY_OF_MONTH, 1);
+                calendar.add(Calendar.DAY_OF_MONTH, 1);                      // Calendar instance to get date on left button click
                 Date d = calendar.getTime();
                 dayOfTheMonth = new SimpleDateFormat("dd").format(d);
                 month = new SimpleDateFormat("MMM").format(d);
@@ -180,6 +186,7 @@ public class MainActivity extends AppCompatActivity {
                 eveningList.clear();
                 nightList.clear();
 
+                // Again clear the arraylist and populate based on index
                 for (Tasks task : taskList.getTasks()) {
                     int frequency = task.getFrequency();
                     int duration = task.getDuration();
@@ -203,6 +210,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
 
+                //set viewpager adapter on button click with values
                 adapter = new DaysPagerAdapter(getSupportFragmentManager(), FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT, index, morningList, afternoonList, eveningList, nightList);
                 pager.setAdapter(adapter);
             }
@@ -210,6 +218,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    //API call using retrofit
     public void connectAndGetApiData() {
         if (retrofit == null) {
             retrofit = new Retrofit.Builder()
